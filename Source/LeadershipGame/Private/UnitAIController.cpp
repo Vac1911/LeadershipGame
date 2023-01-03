@@ -108,6 +108,12 @@ void AUnitAIController::IssueOrder(URTSOrder* Order)
         return;
     }
 
+	if (!Order)
+	{
+		UE_LOG(LogTemp, Error, TEXT("AUnitAIController::IssueOrder recieved nullptr as order"));
+		return;
+	}
+
     // Update blackboard.
 
 	Blackboard->SetValueAsObject(TEXT("CurrentOrder"), Order);

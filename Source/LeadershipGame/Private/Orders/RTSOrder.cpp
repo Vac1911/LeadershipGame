@@ -76,9 +76,7 @@ void URTSOrder::IssueOrder(AActor* OrderedActor) const
         return;
     }
 
-    URTSOrder& self = this*;
-
-    PawnController->IssueOrder(this);
+    PawnController->IssueOrder(const_cast<URTSOrder*>(this));
 }
 
 void URTSOrder::IssueOrder(UUnitGroup* OrderedGroup) const
