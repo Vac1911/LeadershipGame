@@ -81,10 +81,7 @@ void URTSOrder::IssueOrder(AActor* OrderedActor) const
 
 void URTSOrder::IssueOrder(UUnitGroup* OrderedGroup) const
 {
-    GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::White, TEXT("URTSOrder::IssueOrder for UUnitGroup"));
-    for (auto& Unit : OrderedGroup->Units) {
-        IssueOrder(Unit);
-    }
+    OrderedGroup->IssueOrder(const_cast<URTSOrder*>(this));
 }
 
 ERTSOrderTargetType URTSOrder::GetTargetType() const

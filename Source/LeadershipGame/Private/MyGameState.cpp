@@ -14,14 +14,14 @@ UUnitGroup* AMyGameState::SpawnFireteam(FVector Location, TSubclassOf<APawn> Uni
 	UUnitGroup* UnitGroup = NewObject<UUnitGroup>();
 	if (IsValid(UnitType))
 	{
+		FRotator SpawnRotation = FRotator(0.0f, 0.0f, 0.0f);
 		for (int i = 0; i < 4; i++) {
-			FVector SpawnLocation = Location + FVector(0.0f, 0.0f, 100.0f);
-			FRotator SpawnRotation = FRotator(0.0f, 0.0f, 0.0f);
+			FVector SpawnOffset = FVector(0.0f, 100.0f, 100.0f).RotateAngleAxis(90.0f * i, FVector::UpVector.GetSafeNormal());
 
 			FActorSpawnParameters SpawnParameters = FActorSpawnParameters();
 			SpawnParameters.bNoFail = true;
 
-			APawn* SpawnedActor = GetWorld()->SpawnActor<APawn>(UnitType, SpawnLocation, SpawnRotation, SpawnParameters);
+			APawn* SpawnedActor = GetWorld()->SpawnActor<APawn>(UnitType, Location + SpawnOffset, SpawnRotation, SpawnParameters);
 			UnitGroup->Units.Add(SpawnedActor);
 		}
 		AddGroup(UnitGroup);

@@ -2,7 +2,7 @@
 
 
 #include "BaseWeapon.h"
-#include "PlayerCharacter.h"
+#include "ShooterCharacter.h"
 
 ABaseWeapon::ABaseWeapon()
 {
@@ -49,7 +49,7 @@ bool ABaseWeapon::IsEquipped() const
 	return bIsEquipped;
 }
 
-void ABaseWeapon::OnEnterInventory(APlayerCharacter* NewOwner)
+void ABaseWeapon::OnEnterInventory(AShooterCharacter* NewOwner)
 {
 	SetOwningPawn(NewOwner);
 }
@@ -98,7 +98,7 @@ void ABaseWeapon::DetachMeshFromPawn()
 	MeshSkeleton->SetHiddenInGame(true);
 }
 
-void ABaseWeapon::SetOwningPawn(APlayerCharacter* NewOwner)
+void ABaseWeapon::SetOwningPawn(AShooterCharacter* NewOwner)
 {
 	//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Purple, "Owner: " + NewOwner->GetActorLabel());
 	if (OwningCharacter != NewOwner)

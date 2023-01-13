@@ -57,15 +57,15 @@ void UMapWidget::UpdatePendingIcons()
 FVector UMapWidget::FindClickedLocation(const FPointerEvent& MouseEvent, bool& DidHitOUT)
 {
 	const FVector2D MousePosition = MouseEvent.GetScreenSpacePosition();
-	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Purple, "MousePosition: " + MousePosition.ToString());
+	//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Purple, "MousePosition: " + MousePosition.ToString());
 	const FVector2D MapPoint = ScreenToMapPoint(MousePosition);
-	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Purple, "MousePositionReversed: " + MapToScreenPoint(MapPoint).ToString());
+	//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Purple, "MousePositionReversed: " + MapToScreenPoint(MapPoint).ToString());
 	return MapToWorldPoint(MapPoint, DidHitOUT);
 }
 
 FVector2D UMapWidget::ScreenToMapPoint(const FVector2D ScreenPoint)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Cyan, "ScreenPoint: " + ScreenPoint.ToString());
+	//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Cyan, "ScreenPoint: " + ScreenPoint.ToString());
 	const FBox2D MapBounds = GetBox2D();
 
 	FVector2D InvMapPoint = (ScreenPoint - MapBounds.GetCenter()) / MapBounds.GetExtent();
@@ -97,10 +97,10 @@ FVector UMapWidget::MapToWorldPoint(const FVector2D MapPoint, bool& DidHitOUT)
 		TraceParams      // additional trace settings
 	);
 
-	DrawDebugLine(GetWorld(), FVector(WorldVector2D, 5000.0), FVector(WorldVector2D, -5000.0), FColor::Purple, false, 120.f, ECC_WorldStatic, 4.f);
+	//DrawDebugLine(GetWorld(), FVector(WorldVector2D, 5000.0), FVector(WorldVector2D, -5000.0), FColor::Purple, false, 120.f, ECC_WorldStatic, 4.f);
 
 	if (DidHitOUT) {
-		DrawDebugBox(GetWorld(), HitDetails.Location, FVector(20.f, 20.f, 20.f), FColor::Blue, false, 120.f, ECC_WorldStatic, 2.f);
+		//DrawDebugBox(GetWorld(), HitDetails.Location, FVector(20.f, 20.f, 20.f), FColor::Blue, false, 120.f, ECC_WorldStatic, 2.f);
 		return HitDetails.Location;
 	}
 	else {

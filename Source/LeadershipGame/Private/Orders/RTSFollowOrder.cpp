@@ -1,6 +1,4 @@
 #include "Orders/RTSFollowOrder.h"
-
-//#include "Libraries/RTSGameplayTagLibrary.h"
 #include "Orders/RTSOrderTargetType.h"
 
 

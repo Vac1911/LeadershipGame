@@ -6,7 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "BaseWeapon.generated.h"
 
-class APlayerCharacter;
+class AShooterCharacter;
 
 // This class exists so that ShootableInterface and Weapon are not circular dependencies, and to provide a stronger type binding than AActor*
 
@@ -16,9 +16,9 @@ class LEADERSHIPGAME_API ABaseWeapon : public AActor
 	GENERATED_BODY()
 
 protected:
-	class APlayerCharacter* OwningCharacter;
+	class AShooterCharacter* OwningCharacter;
 
-	void SetOwningPawn(APlayerCharacter* NewOwner);
+	void SetOwningPawn(AShooterCharacter* NewOwner);
 
 	/** is weapon currently equipped? */
 	uint32 bIsEquipped : 1;
@@ -66,7 +66,7 @@ public:
 	/** detaches weapon mesh from pawn */
 	void DetachMeshFromPawn();
 
-	void OnEnterInventory(APlayerCharacter* NewOwner);
+	void OnEnterInventory(AShooterCharacter* NewOwner);
 
 	void OnLeaveInventory();
 };

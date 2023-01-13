@@ -21,6 +21,9 @@ public:
 
     UPROPERTY(BlueprintReadWrite, EditAnywhere)
     FVector Offset;
+
+    /** Is this position the center of the formation */
+    bool IsCenter();
 };
 
 
@@ -42,4 +45,8 @@ public:
     TArray<FMovementInstruction> Instructions;
 
     static const FUnitGroupFormation Column;
+
+    static const FUnitGroupFormation Diamond;
+
+    bool HasInstructions();
 };

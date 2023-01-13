@@ -6,12 +6,18 @@
 
 FMovementInstruction::FMovementInstruction()
 {
+	Index = -1;
 }
 
 FMovementInstruction::FMovementInstruction(int FollowIndex, FVector FollowOffset)
 {
 	Index = FollowIndex;
 	Offset = FollowOffset;
+}
+
+bool FMovementInstruction::IsCenter()
+{
+	return Index == -1;
 }
 
 FUnitGroupFormation::FUnitGroupFormation()
@@ -33,3 +39,18 @@ const FUnitGroupFormation FUnitGroupFormation::Column = FUnitGroupFormation(
 		FMovementInstruction(3, FVector::BackwardVector)
 	})
 );
+
+const FUnitGroupFormation FUnitGroupFormation::Diamond = FUnitGroupFormation(
+	FName(TEXT("Diamond")),
+	TArray<FMovementInstruction>({
+		FMovementInstruction(),
+		FMovementInstruction(1, FVector::BackwardVector + FVector::RightVector),
+		FMovementInstruction(2, FVector::BackwardVector + FVector::LeftVector),
+		FMovementInstruction(3, FVector::BackwardVector * 2)
+	})
+);
+
+bool FUnitGroupFormation::HasInstructions()
+{
+	return !Instructions.IsEmpty();
+}
