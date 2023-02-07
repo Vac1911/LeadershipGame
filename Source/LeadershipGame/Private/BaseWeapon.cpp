@@ -8,6 +8,12 @@ ABaseWeapon::ABaseWeapon()
 {
 }
 
+void ABaseWeapon::BeginPlay()
+{
+	Super::BeginPlay();
+	MeshSkeleton = FindComponentByClass<USkeletalMeshComponent>();
+}
+
 void ABaseWeapon::Shoot(FVector Start, FVector Forward)
 {
 }
@@ -32,14 +38,14 @@ void ABaseWeapon::OnKill()
 
 void ABaseWeapon::OnEquip()
 {
-	AttachMeshToPawn();
+	AttachWeapon();
 
 	bIsEquipped = true;
 }
 
 void ABaseWeapon::OnUnEquip()
 {
-	DetachMeshFromPawn();
+	DetachWeapon();
 	bIsEquipped = false;
 }
 
@@ -52,50 +58,17 @@ bool ABaseWeapon::IsEquipped() const
 void ABaseWeapon::OnEnterInventory(AShooterCharacter* NewOwner)
 {
 	SetOwningPawn(NewOwner);
+
 }
 
 void ABaseWeapon::OnLeaveInventory()
 {
-	SetOwningPawn(NULL);
+	//SetOwningPawn(NULL);
 
 	if (IsEquipped())
 	{
 		OnUnEquip();
 	}
-}
-
-void ABaseWeapon::AttachMeshToPawn()
-{
-	if (OwningCharacter)
-	{
-		// Remove and hide both first and third person meshes
-		DetachMeshFromPawn();
-
-		FName AttachPoint = OwningCharacter->GetWeaponAttachPoint();
-		UMeshComponent* PawnMesh = OwningCharacter->GetSpecifcPawnMesh();
-		MeshSkeleton->SetHiddenInGame(false);
-
-		if (PawnMesh)
-		{
-			GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Purple, "Mesh: Yes");
-		}
-		else
-		{
-			GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Purple, "Mesh: No");
-		}
-		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Purple, "Attach: " + AttachPoint.ToString());
-		MeshSkeleton->AttachToComponent(PawnMesh, FAttachmentTransformRules::SnapToTargetNotIncludingScale, AttachPoint);
-	}
-	else
-	{
-		//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Purple, "Attach: No Pawn");
-	}
-}
-
-void ABaseWeapon::DetachMeshFromPawn()
-{
-	MeshSkeleton->DetachFromComponent(FDetachmentTransformRules::KeepRelativeTransform);
-	MeshSkeleton->SetHiddenInGame(true);
 }
 
 void ABaseWeapon::SetOwningPawn(AShooterCharacter* NewOwner)
@@ -108,4 +81,35 @@ void ABaseWeapon::SetOwningPawn(AShooterCharacter* NewOwner)
 		// net owner for RPC calls
 		SetOwner(NewOwner);
 	}
+	else {
+		UE_LOG(LogTemp, Warning, TEXT("ABaseWeapon::SetOwningPawn - NewOwner was the same as current owner"));
+	}
+}
+
+void ABaseWeapon::AttachWeapon()
+{
+	FName AttachPoint = OwningCharacter->GetWeaponAttachPoint();
+	UMeshComponent* PawnMesh = OwningCharacter->GetSpecifcPawnMesh();
+	if (!PawnMesh) {
+		UE_LOG(LogTemp, Fatal, TEXT("ABaseWeapon::AttachWeapon - OwningCharacter->GetSpecifcPawnMesh() was null"));
+	}
+	if (!MeshSkeleton) {
+		UE_LOG(LogTemp, Fatal, TEXT("ABaseWeapon::AttachWeapon - MeshSkeleton was null"));
+	}
+	MeshSkeleton->SetHiddenInGame(false);
+	MeshSkeleton->AttachToComponent(PawnMesh, FAttachmentTransformRules::SnapToTargetNotIncludingScale, AttachPoint);
+	//MeshSkeleton->AttachToComponent(PawnMesh, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, EAttachmentRule::KeepWorld, EAttachmentRule::KeepWorld, false), AttachPoint);
+
+	/*FQuat QuatRotation = FQuat::MakeFromRotator(FRotator(0, -90, 0));
+	AddActorLocalRotation(QuatRotation, false, 0, ETeleportType::None);*/
+
+	FTransform AttachmentTransform = MeshSkeleton->GetSocketTransform(AttachPoint, ERelativeTransformSpace::RTS_Component);
+	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Purple, FString::Printf(TEXT("SocketLocation: %s"), *AttachmentTransform.GetLocation().ToString()));
+	AddActorLocalOffset(-AttachmentTransform.GetLocation(), false, 0, ETeleportType::None);
+}
+
+void ABaseWeapon::DetachWeapon()
+{
+	MeshSkeleton->DetachFromComponent(FDetachmentTransformRules::KeepRelativeTransform);
+	MeshSkeleton->SetHiddenInGame(true);
 }

@@ -43,6 +43,16 @@ FVector AUnitCharacter::GetLocation_Implementation()
 	return GetActorLocation();
 }
 
+void AUnitCharacter::StopCurrentOrder_Implementation()
+{
+	GetUnitController()->StopCurrentOrder();
+}
+
+bool AUnitCharacter::IsIdle_Implementation()
+{
+	return GetUnitController()->IsIdle();
+}
+
 UObject* AUnitCharacter::GetParentGroup_Implementation()
 {
 	return Cast<UObject>(ParentGroup);

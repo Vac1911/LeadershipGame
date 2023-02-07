@@ -30,6 +30,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<ABaseWeapon*> Equipment;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool IsAiming;
+
 	UFUNCTION(BlueprintCallable, Category = "ShooterCharacter|Weapon")
 	virtual void AddWeapon(ABaseWeapon* Weapon);
 

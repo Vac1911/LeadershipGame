@@ -7,12 +7,13 @@
 #include "Orders/RTSOrderData.h"
 #include "Orders/RTSOrderType.h"
 #include "CustomBlueprintLibrary.h"
+#include "Components/MercunaGroundNavigationComponent.h"
 #include "UnitAIController.generated.h"
 
 
 class URTSAttackComponent;
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FUnitAIControllerCurrentOrderChangedSignature, AActor*, Actor, const FRTSOrderData&, NewOrder);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FUnitAIControllerCurrentOrderChangedSignature, AActor*, Actor, FRTSOrderData&, NewOrder);
 
 
 /**
@@ -24,34 +25,20 @@ class LEADERSHIPGAME_API AUnitAIController : public AAIController
     GENERATED_BODY()
 
 public:
-	/** Makes the pawn look for a feasible target in its acquisition radius. */
-	UFUNCTION(BlueprintCallable)
-	void FindTargetInAcquisitionRadius();
-
 	/** Gets the class of the order currently issued to the pawn. */
 	UFUNCTION(BlueprintPure)
-	TSubclassOf<URTSOrder> GetCurrentOrder() const;
-	
-    /** Checks whether the pawn has an order of the specified type. */
-    UFUNCTION(BlueprintPure)
-    bool HasOrder(ERTSOrderType OrderType) const;
+    URTSOrder* GetCurrentOrder();
 
     /** Checks whether the pawn has an order of the specified type. */
     UFUNCTION(BlueprintPure)
-    bool HasOrderByClass(TSubclassOf<URTSOrder> OrderClass) const;
+    bool HasOrderByClass(TSubclassOf<URTSOrder> OrderClass);
 
     /** Checks whether the pawn is idle, or has any orders. */
     UFUNCTION(BlueprintPure)
-    bool IsIdle() const;
+    bool IsIdle();
 
     /** Makes the pawn carry out the specified order. */
     void IssueOrder(URTSOrder* Order);
-
-	/** Makes the pawn attack the specified target. */
-	void IssueAttackOrder(AActor* Target);
-
-    /** Makes the pawn move towards the specified location. */
-    void IssueMoveOrder(const FVector& Location);
 
 	/** Makes the pawn stop all actions immediately. */
 	void IssueStopOrder();
@@ -60,8 +47,18 @@ public:
     UPROPERTY(BlueprintAssignable, Category = "RTS")
     FUnitAIControllerCurrentOrderChangedSignature OnCurrentOrderChanged;
 
+    /** Terminate any active movement actions */
+    UFUNCTION(BlueprintCallable)
+    void CancelMovement();
+
+    /** Remove Current Order */
+    UFUNCTION(BlueprintCallable)
+    void StopCurrentOrder();
+
 protected:
 	virtual void OnPossess(APawn* InPawn) override;
+
+    UMercunaNavigationComponent* NavComponent;
 
 private:
     /** Behavior tree to use for driving the pawn AI. */
@@ -75,9 +72,4 @@ private:
 	/** Types of actors to filter for when trying to find targets in the acquisition radius. */
 	UPROPERTY(EditDefaultsOnly, Category = "RTS")
 	TArray<TEnumAsByte<EObjectTypeQuery>> AcquisitionObjectTypes;
-	
-    /*UPROPERTY()
-	URTSAttackComponent* AttackComponent;*/
-
-    ERTSOrderType OrderClassToType(UClass* OrderClass) const;
 };

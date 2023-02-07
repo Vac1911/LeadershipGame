@@ -34,9 +34,9 @@ const FUnitGroupFormation FUnitGroupFormation::Column = FUnitGroupFormation(
 	FName(TEXT("Column")),
 	TArray<FMovementInstruction>({
 		FMovementInstruction(),
+		FMovementInstruction(0, FVector::BackwardVector),
 		FMovementInstruction(1, FVector::BackwardVector),
-		FMovementInstruction(2, FVector::BackwardVector),
-		FMovementInstruction(3, FVector::BackwardVector)
+		FMovementInstruction(2, FVector::BackwardVector)
 	})
 );
 
@@ -44,9 +44,9 @@ const FUnitGroupFormation FUnitGroupFormation::Diamond = FUnitGroupFormation(
 	FName(TEXT("Diamond")),
 	TArray<FMovementInstruction>({
 		FMovementInstruction(),
-		FMovementInstruction(1, FVector::BackwardVector + FVector::RightVector),
-		FMovementInstruction(2, FVector::BackwardVector + FVector::LeftVector),
-		FMovementInstruction(3, FVector::BackwardVector * 2)
+		FMovementInstruction(0, FVector::BackwardVector + FVector::RightVector),
+		FMovementInstruction(1, FVector::BackwardVector + FVector::LeftVector),
+		FMovementInstruction(2, FVector::BackwardVector * 2)
 	})
 );
 

@@ -12,7 +12,7 @@ class URTSOrder;
 
 /** Group of units */
 UCLASS(BlueprintType)
-class LEADERSHIPGAME_API UUnitGroup : public UObject, public IUnitInterface
+class LEADERSHIPGAME_API UUnitGroup : public UObject, public IUnitInterface, public FTickableGameObject
 {
     GENERATED_BODY()
 
@@ -22,16 +22,29 @@ public:
     UPROPERTY(BlueprintReadWrite, EditAnywhere)
     FName Name;
 
-    /** Pawns in group. */
+    /** Distance between units in group */
+    UPROPERTY(BlueprintReadWrite, EditAnywhere)
+    float Dispersion;
+
+    /** Units in group */
     UPROPERTY(BlueprintReadWrite, EditAnywhere)
     TArray<APawn*> Units;
 
-    /** Formation for units to move in */
-    UPROPERTY(BlueprintReadWrite, EditAnywhere)
-    FUnitGroupFormation Formation;
+    // Called every frame
+    virtual void Tick(float DeltaTime);
 
     void IssueOrder(URTSOrder* Order);
 
-    /** Get location of the group */
+    void SendNextOrder();
+
+    void StopAllOrders(URTSOrder* Order);
+
+    void StopCurrentOrder_Implementation() override;
+
     FVector GetLocation_Implementation() override;
+
+protected:
+    TQueue<URTSOrder*> OrderQue;
+
+    TStatId GetStatId() const;
 };

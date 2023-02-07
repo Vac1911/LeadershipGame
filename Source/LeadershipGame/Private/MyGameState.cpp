@@ -15,7 +15,7 @@ UUnitGroup* AMyGameState::SpawnFireteam(FVector Location, TSubclassOf<APawn> Uni
 	if (IsValid(UnitType))
 	{
 		FRotator SpawnRotation = FRotator(0.0f, 0.0f, 0.0f);
-		for (int i = 0; i < 4; i++) {
+		for (int i = 0; i < 2; i++) {
 			FVector SpawnOffset = FVector(0.0f, 100.0f, 100.0f).RotateAngleAxis(90.0f * i, FVector::UpVector.GetSafeNormal());
 
 			FActorSpawnParameters SpawnParameters = FActorSpawnParameters();

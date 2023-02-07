@@ -34,6 +34,12 @@ public:
 
 	FVector GetLocation_Implementation() override;
 
+	/** Remove Current Order */
+	void StopCurrentOrder_Implementation() override;
+
+	/** Remove Current Order */
+	bool IsIdle_Implementation() override;
+
 	UObject* GetParentGroup_Implementation() /*override*/;
 
 	void SetParentGroup_Implementation(UObject* Parent) /*override*/;

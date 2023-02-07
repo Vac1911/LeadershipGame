@@ -26,76 +26,26 @@ void AUnitAIController::OnPossess(APawn* InPawn)
 
     // Run behavior tree.
     RunBehaviorTree(PawnBehaviorTreeAsset);
+
+	NavComponent = InPawn->FindComponentByClass<UMercunaGroundNavigationComponent>();
 }
 
-void AUnitAIController::FindTargetInAcquisitionRadius()
+URTSOrder* AUnitAIController::GetCurrentOrder()
 {
-	//if (!IsValid(AttackComponent))
-	//{
-	//	return;
-	//}
-
-	//// Find nearby actors.
-	//TArray<AActor*> ActorsToIgnore;
-	//ActorsToIgnore.Add(GetPawn());
-	//
-	//TArray<AActor*> NearbyActors;
-	//UKismetSystemLibrary::SphereOverlapActors(this, GetPawn()->GetActorLocation(),
-	//	AttackComponent->GetAcquisitionRadius(), AcquisitionObjectTypes, APawn::StaticClass(), ActorsToIgnore,
-	//	NearbyActors);
-	//
-	//// Find target to acquire.
-	//for (AActor* NearbyActor : NearbyActors)
-	//{
-	//	if (!IsValid(NearbyActor))
-	//	{
-	//		continue;
-	//	}
-
-	//	// Check owner.
-	//	const AActor* MyActor = GetPawn();
-
-	//	if (IsValid(MyActor))
-	//	{
-	//		const URTSOwnerComponent* MyOwnerComponent = MyActor->FindComponentByClass<URTSOwnerComponent>();
-
-	//		if (MyOwnerComponent && MyOwnerComponent->IsSameTeamAsActor(NearbyActor))
-	//		{
-	//			continue;
-	//		}
-	//	}
-
-	//	// Check if found attackable actor.
-	//	if (!URTSGameplayTagLibrary::HasGameplayTag(NearbyActor, URTSGameplayTagLibrary::Status_Permanent_CanBeAttacked()))
-	//	{
-	//		continue;
-	//	}
-
-	//	// Acquire target.
-	//	Blackboard->SetValueAsObject(TEXT("TargetActor"), NearbyActor);
-
-	//	UE_LOG(LogTemp, Log, TEXT("%s automatically acquired target %s."), *GetPawn()->GetName(), *NearbyActor->GetName());
-	//	return;
-	//}
+    UObject* OrderObj = Blackboard->GetValueAsObject(FName(TEXT("CurrentOrder")));
+	return Cast<URTSOrder>(OrderObj);
 }
 
-TSubclassOf<URTSOrder> AUnitAIController::GetCurrentOrder() const
+bool AUnitAIController::HasOrderByClass(TSubclassOf<URTSOrder> OrderClass)
 {
-	return Blackboard->GetValueAsClass(TEXT("OrderClass"));
+    URTSOrder* CurrentOrder = GetCurrentOrder();
+    if (!CurrentOrder) {
+        return false;
+    }
+    return GetCurrentOrder()->GetClass()->IsChildOf(OrderClass);
 }
 
-bool AUnitAIController::HasOrder(ERTSOrderType OrderType) const
-{
-    UE_LOG(LogTemp, Warning, TEXT("AUnitAIController::HasOrder has been deprecated as of plugin version 1.2. Please use HasOrderByClass instead."));
-    return Blackboard->GetValueAsEnum(TEXT("OrderType")) == (uint8)OrderType;
-}
-
-bool AUnitAIController::HasOrderByClass(TSubclassOf<URTSOrder> OrderClass) const
-{
-    return GetCurrentOrder() == OrderClass;
-}
-
-bool AUnitAIController::IsIdle() const
+bool AUnitAIController::IsIdle()
 {
     return HasOrderByClass(URTSStopOrder::StaticClass());
 }
@@ -115,8 +65,7 @@ void AUnitAIController::IssueOrder(URTSOrder* Order)
 	}
 
     // Update blackboard.
-
-	Blackboard->SetValueAsObject(TEXT("CurrentOrder"), Order);
+	Blackboard->SetValueAsObject(FName(TEXT("CurrentOrder")), Order);
 
     // Update behavior tree.
     UBehaviorTreeComponent* BehaviorTreeComponent = Cast<UBehaviorTreeComponent>(BrainComponent);
@@ -125,47 +74,25 @@ void AUnitAIController::IssueOrder(URTSOrder* Order)
         BehaviorTreeComponent->RestartTree();
     }
 
-    //// Apply order logic.
-    //UCustomBlueprintLibrary::IssueOrder(GetOwner(), Order);
-
     //// Notify listeners.
     //OnCurrentOrderChanged.Broadcast(GetOwner(), Order);
 }
 
-void AUnitAIController::IssueAttackOrder(AActor* Target)
-{
-    FRTSOrderData Order;
-    Order.OrderClass = URTSAttackOrder::StaticClass();
-    Order.TargetActor = Target;
-
-    //IssueOrder(Order);
-}
-
-void AUnitAIController::IssueMoveOrder(const FVector& Location)
-{
-    FRTSOrderData Order;
-    Order.OrderClass = URTSMoveOrder::StaticClass();
-    Order.TargetLocation = Location;
-    //IssueOrder(Order);
-}
-
 void AUnitAIController::IssueStopOrder()
 {
-    FRTSOrderData Order;
-    Order.OrderClass = URTSStopOrder::StaticClass();
-    //IssueOrder(Order);
+    URTSStopOrder* StopOrder = NewObject<URTSStopOrder>();
+    IssueOrder(StopOrder);
 }
 
-ERTSOrderType AUnitAIController::OrderClassToType(UClass* OrderClass) const
+void AUnitAIController::CancelMovement()
 {
-    if (OrderClass == URTSAttackOrder::StaticClass())
-    {
-        return ERTSOrderType::ORDER_Attack;
-    }
-    else if (OrderClass == URTSMoveOrder::StaticClass())
-    {
-        return ERTSOrderType::ORDER_Move;
-    }
+	if (NavComponent) {
+		NavComponent->CancelMovement(NavComponent->GetCurrentRequestId());
+	}
+}
 
-    return ERTSOrderType::ORDER_None;
+void AUnitAIController::StopCurrentOrder()
+{
+	//Blackboard->SetValueAsObject(TEXT("CurrentOrder"), nullptr);
+    IssueStopOrder();
 }

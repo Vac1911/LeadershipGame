@@ -8,7 +8,6 @@
 
 class AShooterCharacter;
 
-// This class exists so that ShootableInterface and Weapon are not circular dependencies, and to provide a stronger type binding than AActor*
 
 UCLASS()
 class LEADERSHIPGAME_API ABaseWeapon : public AActor
@@ -16,9 +15,17 @@ class LEADERSHIPGAME_API ABaseWeapon : public AActor
 	GENERATED_BODY()
 
 protected:
-	class AShooterCharacter* OwningCharacter;
+	// Called when the game starts or when spawned
+	virtual void BeginPlay() override;
 
+	/** Set the pawn which owns this weapon */
 	void SetOwningPawn(AShooterCharacter* NewOwner);
+
+	/** Attaches the weapon mesh to character mesh */
+	void AttachWeapon();
+
+	/** Detaches the weapon mesh from character mesh */
+	void DetachWeapon();
 
 	/** is weapon currently equipped? */
 	uint32 bIsEquipped : 1;
@@ -28,45 +35,44 @@ public:
 	ABaseWeapon();
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		USkeletalMeshComponent* MeshSkeleton;
+	USkeletalMeshComponent* MeshSkeleton;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		int MagSize;
+	AShooterCharacter* OwningCharacter;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		int MagCount;
+	int MagSize;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		int AmmoMax;
+	int MagCount;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		int AmmoCount;
+	int AmmoMax;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int AmmoCount;
 
 	UFUNCTION(BlueprintCallable, Category = "ActorComponent|Weapon")
-		virtual void Shoot(FVector Start, FVector Forward);
+	virtual void Shoot(FVector Start, FVector Forward);
 
 	UFUNCTION(BlueprintCallable, Category = "ActorComponent|Weapon")
-		virtual void Reload();
+	virtual void Reload();
 
 	UFUNCTION(BlueprintCallable, Category = "ActorComponent|Weapon")
-		virtual void OnKill();
+	virtual void OnKill();
 
-	/** weapon is being equipped by owner pawn */
+	/** Weapon is being equipped by owner pawn */
 	virtual void OnEquip();
 
-	/** weapon is holstered by owner pawn */
+	/** Weapon is holstered by owner pawn */
 	virtual void OnUnEquip();
 
-	/** check if it's currently equipped */
+	/** Check if it's currently equipped */
 	bool IsEquipped() const;
 
-	/** attaches weapon mesh to pawn's mesh */
-	void AttachMeshToPawn();
-
-	/** detaches weapon mesh from pawn */
-	void DetachMeshFromPawn();
-
+	/** Weapon is entering a character's inventory */
 	void OnEnterInventory(AShooterCharacter* NewOwner);
 
+	/** Weapon is leaving a character's inventory */
 	void OnLeaveInventory();
 };

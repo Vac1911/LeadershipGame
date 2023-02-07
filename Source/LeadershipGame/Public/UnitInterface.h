@@ -29,6 +29,14 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Unit")
 	TArray<FVector> GetWaypoints();
 
+	/** Stops the unit's current order */
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Unit")
+	void StopCurrentOrder();
+
+	/** Is unit idle? */
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Unit")
+	bool IsIdle();
+
 	/*UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Unit")
 	UObject* GetParentGroup();
 

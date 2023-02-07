@@ -22,6 +22,10 @@ class LEADERSHIPGAME_API URTSOrder : public UObject
     GENERATED_BODY()
 
 public:
+    /** Formation to move in. */
+    UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "RTS")
+    FUnitGroupFormation Formation;
+
     /** Whether the specified actor can obey this order. */
     virtual bool CanObeyOrder(const AActor* OrderedActor, int32 Index) const;
 

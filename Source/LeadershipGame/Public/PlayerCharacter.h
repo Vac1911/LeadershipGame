@@ -25,9 +25,6 @@ protected:
 
 public:
 	UPROPERTY(EditAnywhere, Category = "PlayerCharacter|Mesh")
-	FName MeshTag;
-
-	UPROPERTY(EditAnywhere, Category = "PlayerCharacter|Mesh")
 	FName WeaponAttachPoint;
 
 	UFUNCTION(BlueprintCallable, Category = "PlayerCharacter|Mesh")
