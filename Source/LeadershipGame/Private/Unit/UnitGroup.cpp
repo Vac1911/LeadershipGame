@@ -12,18 +12,23 @@ UUnitGroup::UUnitGroup(const FObjectInitializer& ObjectInitializer) : Super(Obje
 
 void UUnitGroup::Tick(float DeltaTime)
 {
-	/*for (auto& UnitPawn : Units) {
-		IUnitInterface* Unit = Cast<IUnitInterface>(UnitPawn);
-		UE_LOG(LogTemp, Warning, TEXT("The boolean value is %s"), (Unit->IsIdle_Implementation() ? TEXT("true") : TEXT("false")));
-	}*/
+	//// If every unit has completed their order
+	//if (Units.ContainsByPredicate([](APawn* Pawn) {
+	//	IUnitInterface* Unit = Cast<IUnitInterface>(Pawn);
+	//	return Unit->GetOrderIsComplete_Implementation();
+	//})) {
+	//	// Remove the current order
+	//	OrderQue.Pop();
+	//}
 
-	// If none of our units are busy
+	// If every unit is idle
 	if (Units.ContainsByPredicate([](APawn* Pawn) {
 		IUnitInterface* Unit = Cast<IUnitInterface>(Pawn);
 		return Unit->IsIdle_Implementation();
 	})) {
 		// And there are orders in the que
 		if (!OrderQue.IsEmpty()) {
+
 			// Send the next order
 			SendNextOrder();
 		}
@@ -33,7 +38,7 @@ void UUnitGroup::Tick(float DeltaTime)
 void UUnitGroup::IssueOrder(URTSOrder* Order)
 {
 	UE_LOG(LogTemp, Warning, TEXT("IssueOrder"));
-	OrderQue.Enqueue(Order);
+	OrderQue.Insert(Order, 0);
 }
 
 void UUnitGroup::SendNextOrder()
@@ -44,7 +49,7 @@ void UUnitGroup::SendNextOrder()
 	}
 
 	// Retrive then remove order from que
-	URTSOrder* Order = *OrderQue.Peek();
+	URTSOrder* Order = OrderQue.Last();
 	UE_LOG(LogTemp, Warning, TEXT("SendNextOrder"));
 
 	FUnitGroupFormation Formation = Order->Formation;
@@ -75,8 +80,6 @@ void UUnitGroup::SendNextOrder()
 			Order->IssueOrder(Unit);
 		}
 	}
-
-	OrderQue.Pop();
 }
 
 void UUnitGroup::StopAllOrders(URTSOrder* Order)
@@ -101,6 +104,11 @@ FVector UUnitGroup::GetLocation_Implementation()
 
 	APawn* Leader = Units[0];
 	return Leader->GetActorLocation();
+}
+
+TArray<URTSOrder*> UUnitGroup::GetOrders() const
+{
+	return OrderQue;
 }
 
 TStatId UUnitGroup::GetStatId() const

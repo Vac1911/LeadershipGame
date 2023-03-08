@@ -43,14 +43,30 @@ FVector AUnitCharacter::GetLocation_Implementation()
 	return GetActorLocation();
 }
 
+UObject* AUnitCharacter::GetCurrentOrder_Implementation()
+{
+	return GetUnitController()->GetCurrentOrder();
+}
+
 void AUnitCharacter::StopCurrentOrder_Implementation()
 {
 	GetUnitController()->StopCurrentOrder();
+	SetOrderIsComplete_Implementation(true);
 }
 
 bool AUnitCharacter::IsIdle_Implementation()
 {
 	return GetUnitController()->IsIdle();
+}
+
+bool AUnitCharacter::GetOrderIsComplete_Implementation()
+{
+	return HasCompletedOrder;
+}
+
+void AUnitCharacter::SetOrderIsComplete_Implementation(bool IsComplete)
+{
+	HasCompletedOrder = IsComplete;
 }
 
 UObject* AUnitCharacter::GetParentGroup_Implementation()

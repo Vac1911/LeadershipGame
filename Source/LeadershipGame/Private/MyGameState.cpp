@@ -32,3 +32,25 @@ UUnitGroup* AMyGameState::SpawnFireteam(FVector Location, TSubclassOf<APawn> Uni
 	}
 	return UnitGroup;
 }
+
+UUnitGroup* AMyGameState::SpawnVehicle(FVector Location, TSubclassOf<APawn> UnitType)
+{
+	UUnitGroup* UnitGroup = NewObject<UUnitGroup>();
+	if (IsValid(UnitType))
+	{
+		FRotator SpawnRotation = FRotator(0.0f, 0.0f, 0.0f);
+
+		FActorSpawnParameters SpawnParameters = FActorSpawnParameters();
+		SpawnParameters.bNoFail = true;
+
+		APawn* VehiclePawn = GetWorld()->SpawnActor<APawn>(UnitType, Location, SpawnRotation, SpawnParameters);
+
+		AddGroup(UnitGroup);
+		UnitGroup->Units.Add(VehiclePawn);
+	}
+	else
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("UnitType is invalid"));
+	}
+	return UnitGroup;
+}

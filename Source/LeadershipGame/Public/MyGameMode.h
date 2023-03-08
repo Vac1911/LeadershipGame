@@ -22,6 +22,10 @@ public:
 	UPROPERTY(EditAnywhere, NoClear, BlueprintReadOnly, Category = Classes)
 	TSubclassOf<APawn> UnitClass;
 
+	/** The default pawn class for vehicle. */
+	UPROPERTY(EditAnywhere, NoClear, BlueprintReadOnly, Category = Classes)
+	TSubclassOf<APawn> VehicleClass;
+
 	/** Transition from WaitingToStart to InProgress. You can call this manually, will also get called if ReadyToStartMatch returns true */
 	UFUNCTION(BlueprintCallable, Category = "Game")
 	virtual void HandleMatchHasStarted() override;

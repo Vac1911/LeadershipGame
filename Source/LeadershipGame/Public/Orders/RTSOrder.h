@@ -8,11 +8,13 @@
 #include "Orders/RTSOrderTagRequirements.h"
 #include "Orders/RTSOrderTargetData.h"
 #include "Orders/RTSOrderTargetType.h"
-#include "Unit/UnitGroup.h"
+#include "Unit/UnitGroupFormation.h"
+#include "UnitInterface.h"
 #include "RTSOrder.generated.h"
 
 
 class UTexture2D;
+class UnitAIController;
 
 
 /** Order that can be issued to an actor. */
@@ -22,9 +24,15 @@ class LEADERSHIPGAME_API URTSOrder : public UObject
     GENERATED_BODY()
 
 public:
+    URTSOrder(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
+
     /** Formation to move in. */
     UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "RTS")
     FUnitGroupFormation Formation;
+
+    /** Has the Order been completed? */
+    UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "RTS")
+    bool IsCompleted;
 
     /** Whether the specified actor can obey this order. */
     virtual bool CanObeyOrder(const AActor* OrderedActor, int32 Index) const;
@@ -41,8 +49,8 @@ public:
     /** Issues this order to the specified actor. */
     virtual void IssueOrder(AActor* OrderedActor) const;
 
-    /** Issues this order to the specified group. */
-    virtual void IssueOrder(UUnitGroup* OrderedGroup) const;
+    ///** Issues this order to the specified group. */
+    //virtual void IssueOrder(UUnitGroup* OrderedGroup) const;
 
     /** Gets the target required by this order. */
     ERTSOrderTargetType GetTargetType() const;

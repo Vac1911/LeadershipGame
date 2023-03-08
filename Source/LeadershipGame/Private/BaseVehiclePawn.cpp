@@ -45,6 +45,9 @@ ABaseVehiclePawn::ABaseVehiclePawn(const FObjectInitializer& ObjectInitializer) 
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Purple, TEXT("No VehicleMovement Comp"));
 	}
+
+
+	AIControllerClass = AUnitAIController::StaticClass();
 }
 
 void ABaseVehiclePawn::BeginPlay()
@@ -80,6 +83,12 @@ bool ABaseVehiclePawn::EnterVehicle(APawn* Pawn)
 {
 	ABaseVehicleSeat* Seat = GetClosestSeat(Pawn->GetActorLocation());
 
+	return EnterVehicleSeat(Pawn, Seat);
+
+}
+
+bool ABaseVehiclePawn::EnterVehicleSeat(APawn* Pawn, ABaseVehicleSeat* Seat)
+{
 	if (Seat == nullptr || Seat->IsOccupied()) {
 
 		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Purple, TEXT("Invalid Seat"));
@@ -89,7 +98,6 @@ bool ABaseVehiclePawn::EnterVehicle(APawn* Pawn)
 	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Purple, TEXT("Enter"));
 	Seat->EnterSeat(Pawn);
 	return true;
-
 }
 
 ABaseVehicleSeat* ABaseVehiclePawn::GetClosestSeat(const FVector Position)
@@ -111,4 +119,50 @@ ABaseVehicleSeat* ABaseVehiclePawn::GetClosestSeat(const FVector Position)
 		}
 	}
 	return ClosestSeat;
+}
+
+AUnitAIController* ABaseVehiclePawn::GetUnitController()
+{
+	return Cast<AUnitAIController>(GetController());
+}
+
+FVector ABaseVehiclePawn::GetLocation_Implementation()
+{
+	return GetActorLocation();
+}
+
+UObject* ABaseVehiclePawn::GetCurrentOrder_Implementation()
+{
+	return GetUnitController()->GetCurrentOrder();
+}
+
+void ABaseVehiclePawn::StopCurrentOrder_Implementation()
+{
+	GetUnitController()->StopCurrentOrder();
+	SetOrderIsComplete_Implementation(true);
+}
+
+bool ABaseVehiclePawn::IsIdle_Implementation()
+{
+	return GetUnitController()->IsIdle();
+}
+
+bool ABaseVehiclePawn::GetOrderIsComplete_Implementation()
+{
+	return HasCompletedOrder;
+}
+
+void ABaseVehiclePawn::SetOrderIsComplete_Implementation(bool IsComplete)
+{
+	HasCompletedOrder = IsComplete;
+}
+
+UObject* ABaseVehiclePawn::GetParentGroup_Implementation()
+{
+	return Cast<UObject>(ParentGroup);
+}
+
+void ABaseVehiclePawn::SetParentGroup_Implementation(UObject* Parent)
+{
+	ParentGroup = Cast<UUnitGroup>(Parent);
 }

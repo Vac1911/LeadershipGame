@@ -23,4 +23,6 @@ public:
 	void AddGroup(UUnitGroup* Group);
 
 	UUnitGroup* SpawnFireteam(FVector Location, TSubclassOf<APawn> UnitType);
+
+	UUnitGroup* SpawnVehicle(FVector Location, TSubclassOf<APawn> UnitType);
 };

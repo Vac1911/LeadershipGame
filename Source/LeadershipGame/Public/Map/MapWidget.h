@@ -10,6 +10,7 @@
 #include "Components/Image.h"
 #include "Components/CanvasPanelSlot.h"
 #include "Layout/Geometry.h"
+#include "Blueprint/UserWidget.h"
 #include "MapWidget.generated.h"
 
 class UMapIconWidget;
@@ -80,10 +81,18 @@ public:
 	FVector2D WorldToMapPoint(const FVector WorldPoint);
 
 	UFUNCTION(BlueprintCallable, Category = "Map")
+	FVector2D WorldToScreenPoint(const FVector WorldPoint);
+
+	UFUNCTION(BlueprintCallable, Category = "Map")
 	float GetZoom();
 
 	UFUNCTION(BlueprintCallable, Category = "Map")
 	void SetZoom(float NextZoom);
+
+	UFUNCTION(BlueprintCallable, Category = "Map")
+	void DrawOrders(FPaintContext Context);
+
+	FVector2D ScreenToLocal(FVector2D ScreenCoordinate);
 
 	FBox2D GetBox2D();
 

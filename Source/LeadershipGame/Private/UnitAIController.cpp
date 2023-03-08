@@ -4,10 +4,10 @@
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
 
+#include "CustomBlueprintLibrary.h"
 #include "Orders/RTSAttackOrder.h"
 #include "Orders/RTSMoveOrder.h"
 #include "Orders/RTSStopOrder.h"
-
 
 void AUnitAIController::OnPossess(APawn* InPawn)
 {
@@ -32,6 +32,12 @@ void AUnitAIController::OnPossess(APawn* InPawn)
 
 URTSOrder* AUnitAIController::GetCurrentOrder()
 {
+    if (!Blackboard)
+    {
+        UE_LOG(LogTemp, Error, TEXT("Blackboard not set up for %s, can't receive orders. Check AI Controller Class and Auto Possess AI."), *GetPawn()->GetName());
+        return nullptr;
+    }
+
     UObject* OrderObj = Blackboard->GetValueAsObject(FName(TEXT("CurrentOrder")));
 	return Cast<URTSOrder>(OrderObj);
 }
@@ -50,11 +56,16 @@ bool AUnitAIController::IsIdle()
     return HasOrderByClass(URTSStopOrder::StaticClass());
 }
 
+bool AUnitAIController::IsComplete()
+{
+    return GetCurrentOrder()->IsCompleted;
+}
+
 void AUnitAIController::IssueOrder(URTSOrder* Order)
 {
     if (!Blackboard)
     {
-        UE_LOG(LogTemp, Warning, TEXT("Blackboard not set up for %s, can't receive orders. Check AI Controller Class and Auto Possess AI."), *GetPawn()->GetName());
+        UE_LOG(LogTemp, Error, TEXT("Blackboard not set up for %s, can't receive orders. Check AI Controller Class and Auto Possess AI."), *GetPawn()->GetName());
         return;
     }
 
@@ -95,4 +106,12 @@ void AUnitAIController::StopCurrentOrder()
 {
 	//Blackboard->SetValueAsObject(TEXT("CurrentOrder"), nullptr);
     IssueStopOrder();
+}
+
+
+void AUnitAIController::CompleteCurrentOrder()
+{
+    URTSOrder* CurrentOrder = GetCurrentOrder();
+    CurrentOrder->IsCompleted = true;
+    IssueOrder(CurrentOrder);
 }

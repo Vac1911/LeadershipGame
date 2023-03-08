@@ -3,6 +3,9 @@
 
 #include "Map/MapWidget.h"
 #include "Map/MapIconWidget.h"
+#include "Map/MapIconGroupWidget.h"
+#include "Orders/RTSMoveOrder.h"
+#include "Blueprint/WidgetBlueprintLibrary.h"
 
 UMapWidget::UMapWidget(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
@@ -108,13 +111,6 @@ FVector UMapWidget::MapToWorldPoint(const FVector2D MapPoint, bool& DidHitOUT)
 	}
 }
 
-
-FVector2D UMapWidget::WorldToMapPoint(const FVector WorldPoint)
-{
-	FVector CaptureOffset = WorldPoint - CaptureComponent->GetComponentLocation();
-	return FVector2D(CaptureOffset.X * 2 / CaptureComponent->OrthoWidth, CaptureOffset.Y * 2 / CaptureComponent->OrthoWidth);
-}
-
 //FVector UMapWidget::MapToWorldPoint(const FVector2D MapPoint, USceneCaptureComponent2D* CaptureComponent)
 //{
 //	FMinimalViewInfo ViewInfo;
@@ -133,6 +129,19 @@ FVector2D UMapWidget::WorldToMapPoint(const FVector WorldPoint)
 //	FSceneView::DeprojectScreenToWorld(MapPoint, UnconstrainedRectangle, InvViewProjMatrix, /*out*/ WorldPosition, /*out*/ WorldDirection);
 //}
 
+FVector2D UMapWidget::WorldToMapPoint(const FVector WorldPoint)
+{
+	FVector CaptureOffset = WorldPoint - CaptureComponent->GetComponentLocation();
+	return FVector2D(CaptureOffset.X * 2 / CaptureComponent->OrthoWidth, CaptureOffset.Y * 2 / CaptureComponent->OrthoWidth);
+}
+
+
+FVector2D UMapWidget::WorldToScreenPoint(const FVector WorldPoint)
+{
+	FVector2D MapPoint = WorldToMapPoint(WorldPoint);
+	return MapToScreenPoint(MapPoint);
+}
+
 float UMapWidget::GetZoom()
 {
 	return Zoom;
@@ -144,6 +153,57 @@ void UMapWidget::SetZoom(float NextZoom)
 	SetRenderScale(FVector2D(NextZoom));
 	SetRenderTranslation((RenderTransform.Translation / Zoom) * NextZoom);
 	Zoom = NextZoom;
+}
+
+void UMapWidget::DrawOrders(FPaintContext Context)
+{
+	// Loop through icons, skipping ones that are not group icons.
+	for (UMapIconWidget* Icon: Icons) {
+		UMapIconGroupWidget* GroupIcon = Cast<UMapIconGroupWidget>(Icon);
+		if (!GroupIcon) {
+			UE_LOG(LogTemp, Warning, TEXT("Icon Not GroupIcon"));
+			continue;
+		}
+
+		// Loop through the orders for this icon's group.
+		UUnitGroup* Group = Cast<UUnitGroup>(GroupIcon->FollowedUnit.GetObject());
+		FVector2D PrevLocation = ScreenToLocal(WorldToScreenPoint(GroupIcon->GetUnitPosition()));
+		//FVector2D PrevLocation = FVector2D(100,100);
+
+		TArray<URTSOrder*> Orders = Group->GetOrders();
+		for (int i = Orders.Num() - 1; i >= 0; i--) {
+			URTSOrder* Order = Orders[i];
+			// If this order is a move order: Draw a line from the prev location to the destination of the order.
+			URTSMoveOrder* MoveOrder = Cast<URTSMoveOrder>(Order);
+			if (MoveOrder) {
+				FVector2D NextLocation = ScreenToLocal(WorldToScreenPoint(MoveOrder->TargetLocation));
+				UWidgetBlueprintLibrary::DrawLine(Context, PrevLocation, NextLocation);
+
+
+				/*FCanvasLineItem LineItem(FVector2D(StartScreenX, StartScreenY), FVector2D(EndScreenX, EndScreenY));
+				LineItem.SetColor(LineColor);
+				LineItem.LineThickness = LineThickness;
+				Canvas->DrawItem(LineItem);*/
+
+
+				//UE_LOG(LogTemp, Warning, TEXT("DrawLine"));
+				PrevLocation = NextLocation;
+			}
+		}
+	}
+
+}
+
+FVector2D UMapWidget::ScreenToLocal(FVector2D ScreenCoordinate)
+{
+	FGeometry MapGeometry = GetCachedGeometry();
+	FVector2D LocalCoordinate = MapGeometry.AbsoluteToLocal(ScreenCoordinate);
+
+	// Apply Translation and Scale
+	LocalCoordinate += RenderTransform.Translation / RenderTransform.Scale;
+	//LocalCoordinate /= RenderTransform.Scale;
+
+	return LocalCoordinate;
 }
 
 FBox2D UMapWidget::GetBox2D()

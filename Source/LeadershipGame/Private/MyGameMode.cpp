@@ -16,4 +16,5 @@ void AMyGameMode::HandleMatchHasStarted()
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::White, TEXT("AMyGameMode::HandleMatchHasStarted"));
 	AMyGameState* ThisGameState = GetGameState<AMyGameState>();
 	ThisGameState->SpawnFireteam(FVector::Zero(), UnitClass);
+	ThisGameState->SpawnVehicle(FVector::ForwardVector * 1000.0f, VehicleClass);
 }

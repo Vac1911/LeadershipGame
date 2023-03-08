@@ -6,7 +6,6 @@
 #include "Orders/RTSOrder.h"
 #include "Orders/RTSOrderData.h"
 #include "Orders/RTSOrderType.h"
-#include "CustomBlueprintLibrary.h"
 #include "Components/MercunaGroundNavigationComponent.h"
 #include "UnitAIController.generated.h"
 
@@ -37,6 +36,10 @@ public:
     UFUNCTION(BlueprintPure)
     bool IsIdle();
 
+    /** Checks whether the current order is conmplete. */
+    UFUNCTION(BlueprintPure)
+    bool IsComplete();
+
     /** Makes the pawn carry out the specified order. */
     void IssueOrder(URTSOrder* Order);
 
@@ -54,6 +57,10 @@ public:
     /** Remove Current Order */
     UFUNCTION(BlueprintCallable)
     void StopCurrentOrder();
+
+    /** Mark Current Order as Completed */
+    UFUNCTION(BlueprintCallable)
+    void CompleteCurrentOrder();
 
 protected:
 	virtual void OnPossess(APawn* InPawn) override;

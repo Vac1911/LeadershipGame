@@ -43,8 +43,10 @@ public:
 
     FVector GetLocation_Implementation() override;
 
+    TArray<URTSOrder*> GetOrders() const;
+
 protected:
-    TQueue<URTSOrder*> OrderQue;
+    TArray<URTSOrder*> OrderQue;
 
     TStatId GetStatId() const;
 };

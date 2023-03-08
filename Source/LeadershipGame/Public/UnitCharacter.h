@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "UnitInterface.h"
 #include "UnitAIController.h"
+#include "Unit/UnitGroup.h"
 #include "GameFramework/Character.h"
 #include "UnitCharacter.generated.h"
 
@@ -28,20 +29,32 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+
+	/*
+	* Unit Interface
+	*/
 	UUnitGroup* ParentGroup;
+
+	bool HasCompletedOrder = false;
 
 	AUnitAIController* GetUnitController();
 
 	FVector GetLocation_Implementation() override;
 
+	UObject* GetCurrentOrder_Implementation() override;
+
 	/** Remove Current Order */
 	void StopCurrentOrder_Implementation() override;
 
-	/** Remove Current Order */
+	/** Currently Unit is idle */
 	bool IsIdle_Implementation() override;
+
+	/** Is the current order complete? */
+	bool GetOrderIsComplete_Implementation() override;
+
+	void SetOrderIsComplete_Implementation(bool IsComplete) override;
 
 	UObject* GetParentGroup_Implementation() /*override*/;
 
 	void SetParentGroup_Implementation(UObject* Parent) /*override*/;
-
 };

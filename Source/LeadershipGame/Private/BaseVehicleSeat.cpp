@@ -18,21 +18,14 @@ void ABaseVehicleSeat::EnterSeat(APawn* Pawn)
 	if (IsOccupied()) return;
 
 	CurrentPawn = Pawn;
-
-	// Possess this seat
-	Pawn->GetController()->Possess(this);
-
-	Pawn->Destroy();
+	Vehicle->AttachToActor(CurrentPawn, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, EAttachmentRule::SnapToTarget, EAttachmentRule::KeepRelative, false), SocketName);
 }
 
 void ABaseVehicleSeat::LeaveSeat()
 {
 	if (!IsOccupied()) return;
 
-	/*FActorSpawnParameters Parameters;
-	Parameters.Template = CurrentPawn;
-	APawn* Pawn = GetWorld()->SpawnActor<APawn>(CurrentPawn->GetClass(), Parameters);
-	CurrentPawn = nullptr;*/
 
-	// TODO: Possess Pawn
+	CurrentPawn->DetachFromActor(FDetachmentTransformRules::KeepRelativeTransform);
+	CurrentPawn = nullptr;
 }

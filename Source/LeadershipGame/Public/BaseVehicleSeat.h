@@ -16,20 +16,20 @@ public:
 	ABaseVehicleSeat();
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		APawn* CurrentPawn;
+	APawn* CurrentPawn;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		FName SocketName;
+	FName SocketName;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		AWheeledVehiclePawn* Vehicle;
+	AWheeledVehiclePawn* Vehicle;
 
 	UFUNCTION(BlueprintCallable, Category = "Seat")
-		bool IsOccupied();
+	bool IsOccupied();
 
 	UFUNCTION(BlueprintCallable, Category = "Seat")
-		virtual void EnterSeat(APawn* Pawn);
+	virtual void EnterSeat(APawn* Pawn);
 
 	UFUNCTION(BlueprintCallable, Category = "Seat")
-		virtual void LeaveSeat();
+	virtual void LeaveSeat();
 };

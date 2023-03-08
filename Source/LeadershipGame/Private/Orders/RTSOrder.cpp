@@ -1,7 +1,14 @@
 #include "Orders/RTSOrder.h"
 #include "UnitAIController.h"
+#include "Unit/UnitGroup.h"
 #include "GameFramework/Pawn.h"
 #include "Orders/RTSOrderData.h"
+
+URTSOrder::URTSOrder(const FObjectInitializer& ObjectInitializer /*= FObjectInitializer::Get()*/)
+    : Super(ObjectInitializer)
+{
+    IsCompleted = false;
+}
 
 bool URTSOrder::CanObeyOrder(const AActor* OrderedActor, int32 Index) const
 {
@@ -26,7 +33,7 @@ void URTSOrder::IssueOrder(TScriptInterface<IUnitInterface> OrderedUnit) const
     UUnitGroup* OrderedGroup = Cast<UUnitGroup>(Unit);
     if (IsValid(OrderedGroup))
     {
-        return IssueOrder(OrderedGroup);
+        return OrderedGroup->IssueOrder(const_cast<URTSOrder*>(this));
     }
 
     AActor* OrderedActor = Cast<AActor>(Unit);
@@ -37,7 +44,7 @@ void URTSOrder::IssueOrder(TScriptInterface<IUnitInterface> OrderedUnit) const
 
    
 
-    return IssueOrder(Unit);
+    //return IssueOrder(Unit);
 }
 
 void URTSOrder::IssueOrder(UUnitInterface* OrderedUnit) const
@@ -50,7 +57,7 @@ void URTSOrder::IssueOrder(UUnitInterface* OrderedUnit) const
     UUnitGroup* OrderedGroup = Cast<UUnitGroup>(OrderedUnit);
     if (IsValid(OrderedGroup))
     {
-        return IssueOrder(OrderedGroup);
+        return OrderedGroup->IssueOrder(const_cast<URTSOrder*>(this));
     }
 
     AActor* OrderedActor = Cast<AActor>(OrderedUnit);
@@ -79,10 +86,10 @@ void URTSOrder::IssueOrder(AActor* OrderedActor) const
     PawnController->IssueOrder(const_cast<URTSOrder*>(this));
 }
 
-void URTSOrder::IssueOrder(UUnitGroup* OrderedGroup) const
-{
-    OrderedGroup->IssueOrder(const_cast<URTSOrder*>(this));
-}
+//void URTSOrder::IssueOrder(UUnitGroup* OrderedGroup) const
+//{
+//    OrderedGroup->IssueOrder(const_cast<URTSOrder*>(this));
+//}
 
 ERTSOrderTargetType URTSOrder::GetTargetType() const
 {
